@@ -3,6 +3,7 @@ package com.intellij.cce.processor
 import com.intellij.cce.actions.*
 import com.intellij.cce.core.CodeFragment
 import com.intellij.cce.core.CodeToken
+import com.intellij.cce.core.TypeProperty
 
 class CallCompletionProcessor(private val text: String,
                               private val strategy: CompletionStrategy,
@@ -12,7 +13,7 @@ class CallCompletionProcessor(private val text: String,
   override fun process(code: CodeFragment) {
     if (strategy.context == CompletionContext.ALL) {
       for (token in code.getChildren()) {
-        processToken(token)
+        if (token.properties.tokenType != TypeProperty.IMPORT_STATEMENT) processToken(token)
       }
       return
     }

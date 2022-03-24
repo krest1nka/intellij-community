@@ -7,6 +7,7 @@ import com.intellij.psi.util.PsiTypesUtil
 import com.intellij.cce.core.*
 import com.intellij.cce.visitor.exceptions.PsiConverterException
 
+
 class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursiveElementVisitor() {
   private var codeFragment: CodeFragment? = null
 
@@ -30,6 +31,7 @@ class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursi
   }
 
   override fun visitReferenceElement(reference: PsiJavaCodeReferenceElement) {
+    System.out.println(reference.qualifiedName);
     val name = reference.referenceName
     if (name != null) {
       val token = CodeToken(name, reference.textOffset, name.length, createTokenProperties(reference))
@@ -46,8 +48,13 @@ class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursi
     }
   }
 
+  override fun visitImportStatement(statement: PsiImportStatement) {
+    val token = CodeToken(statement.text, statement.textOffset, statement.textLength, importStatementProperties())
+    System.out.println(statement.text)
+    codeFragment?.addChild(token)
+  }
+
   override fun visitPackageStatement(statement: PsiPackageStatement?) = Unit
-  override fun visitImportStatement(statement: PsiImportStatement?) = Unit
   override fun visitImportStaticStatement(statement: PsiImportStaticStatement?) = Unit
   override fun visitComment(comment: PsiComment) = Unit
 
@@ -71,7 +78,12 @@ class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursi
   private fun typeReferenceProperties(type: PsiClass): TokenProperties {
     return properties(TypeProperty.TYPE_REFERENCE, type.asLocation()) {
       packageName = getContainingPackage(type)
+      qualifiedName = type.qualifiedName;
     }
+  }
+
+  private fun importStatementProperties(): TokenProperties {
+    return properties(TypeProperty.IMPORT_STATEMENT, SymbolLocation.PROJECT) {}
   }
 
   private fun variableProperties(): TokenProperties {

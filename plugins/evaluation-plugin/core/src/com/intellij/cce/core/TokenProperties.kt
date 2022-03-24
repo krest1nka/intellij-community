@@ -78,6 +78,7 @@ class JvmProperties(private val props: TokenProperties) : TokenProperties by pro
     var isStatic: Boolean? = null
     var packageName: String? = null
     var declaringClass: String? = null
+    var qualifiedName: String? = null;
   }
 }
 
@@ -129,6 +130,7 @@ enum class TypeProperty {
   TYPE_REFERENCE,
   METHOD_CALL,
   FIELD,
+  IMPORT_STATEMENT,
   ARGUMENT_NAME,
   UNKNOWN
 }

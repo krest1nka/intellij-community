@@ -53,6 +53,9 @@ class Interpreter(private val invoker: CompletionInvoker,
             session.addLookup(lookup)
           }
         }
+        is CallAutoImport -> {
+          TODO()
+        }
         is FinishSession -> {
           if (shouldCompleteToken) {
             if (session == null) throw UnexpectedActionException("Session canceled before created")

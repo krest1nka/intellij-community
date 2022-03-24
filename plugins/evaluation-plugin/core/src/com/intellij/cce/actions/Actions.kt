@@ -6,7 +6,7 @@ import java.lang.reflect.Type
 
 sealed class Action(val type: ActionType) {
   enum class ActionType {
-    MOVE_CARET, CALL_COMPLETION, FINISH_SESSION, PRINT_TEXT, DELETE_RANGE, EMULATE_USER_SESSION, CODE_GOLF
+    MOVE_CARET, CALL_COMPLETION, FINISH_SESSION, PRINT_TEXT, DELETE_RANGE, EMULATE_USER_SESSION, CODE_GOLF, CALL_AUTO_IMPORT
   }
 
   object JsonAdapter : JsonDeserializer<Action>, JsonSerializer<Action> {
@@ -19,6 +19,7 @@ sealed class Action(val type: ActionType) {
         ActionType.DELETE_RANGE -> context.deserialize(json, DeleteRange::class.java)
         ActionType.EMULATE_USER_SESSION -> context.deserialize(json, EmulateUserSession::class.java)
         ActionType.CODE_GOLF -> context.deserialize(json, CodeGolfSession::class.java)
+        ActionType.CALL_AUTO_IMPORT -> context.deserialize(json, CallAutoImport::class.java)
       }
     }
 
@@ -39,3 +40,4 @@ data class PrintText(val text: String, val completable: Boolean = false) : Actio
 data class DeleteRange(val begin: Int, val end: Int, val completable: Boolean = false) : Action(ActionType.DELETE_RANGE)
 data class EmulateUserSession(val expectedText: String, val nodeProperties: TokenProperties) : Action(ActionType.EMULATE_USER_SESSION)
 data class CodeGolfSession(val expectedText: String, val nodeProperties: TokenProperties) : Action(ActionType.CODE_GOLF)
+data class CallAutoImport(val expectedText: String, val nodeProperties: TokenProperties) : Action(ActionType.CALL_AUTO_IMPORT)
