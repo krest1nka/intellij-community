@@ -78,7 +78,7 @@ class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursi
   private fun typeReferenceProperties(type: PsiClass): TokenProperties {
     return properties(TypeProperty.TYPE_REFERENCE, type.asLocation()) {
       packageName = getContainingPackage(type)
-      qualifiedName = type.qualifiedName;
+      qualifiedName = type.qualifiedName
     }
   }
 

@@ -12,28 +12,36 @@ class CallAutoImportProcessor(private val text: String,
 
   override fun process(code: CodeFragment) {
     if (strategy.context == CompletionContext.ALL) {
-      for (token in code.getChildren()) {
-        if (token.properties.tokenType == TypeProperty.IMPORT_STATEMENT) processToken(token)
+      for (import in code.getChildren()) {
+        if (import.properties.tokenType == TypeProperty.IMPORT_STATEMENT) {
+          var expectedQualifiedName: String = import.text.substring(7)
+          System.out.println(expectedQualifiedName)
+          for (token in code.getChildren()) {
+            if (token.properties.additionalProperty("qualified name") == expectedQualifiedName) process(token, import)
+          }
+        }
       }
       return
     }
   }
 
-  private fun processToken(token: CodeToken) {
-    if (!checkFilters(token)) return
+  private fun process(token: CodeToken, import: CodeToken) {
+    //if (!checkFilters(token)) return
 
     when (strategy.context) {
-      CompletionContext.ALL -> prepareAllContext(token)
-      CompletionContext.PREVIOUS -> preparePreviousContext(token)
+      CompletionContext.ALL -> prepareAllContext(token, import)
+      //CompletionContext.PREVIOUS -> preparePreviousContext(token)
     }
 
-    addAction(CallAutoImport(token.text, token.properties))
-    addAction(PrintText(TODO(), false)) //import text
+    addAction(CallAutoImport(import.text, import.properties, token.properties)) //TODO
+    addAction(PrintText(import.text, false))
     addAction(FinishSession())
   }
 
-  private fun prepareAllContext(token: CodeToken) {
-    addAction(DeleteRange(token.offset, token.offset + token.length)) //delete import for token
+
+
+  private fun prepareAllContext(token: CodeToken, import: CodeToken) {
+    addAction(DeleteRange(import.offset, import.offset + import.length)) //delete token
     addAction(MoveCaret(token.offset)) //move caret on token
   }
 

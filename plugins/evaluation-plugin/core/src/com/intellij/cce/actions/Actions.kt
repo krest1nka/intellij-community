@@ -40,4 +40,5 @@ data class PrintText(val text: String, val completable: Boolean = false) : Actio
 data class DeleteRange(val begin: Int, val end: Int, val completable: Boolean = false) : Action(ActionType.DELETE_RANGE)
 data class EmulateUserSession(val expectedText: String, val nodeProperties: TokenProperties) : Action(ActionType.EMULATE_USER_SESSION)
 data class CodeGolfSession(val expectedText: String, val nodeProperties: TokenProperties) : Action(ActionType.CODE_GOLF)
-data class CallAutoImport(val expectedText: String, val nodeProperties: TokenProperties) : Action(ActionType.CALL_AUTO_IMPORT)
+data class CallAutoImport(val expectedText: String, val importProperties: TokenProperties, val tokenProperties: TokenProperties)
+  : Action(ActionType.CALL_AUTO_IMPORT)
