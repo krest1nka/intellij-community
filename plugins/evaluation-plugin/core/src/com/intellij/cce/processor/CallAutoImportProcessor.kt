@@ -33,6 +33,7 @@ class CallAutoImportProcessor(private val text: String,
     }
 
     addAction(CallAutoImport(import.text, import.properties, token.properties)) //TODO
+    addAction(MoveCaret(import.offset))
     addAction(PrintText(import.text, false))
     addAction(FinishSession())
   }
@@ -41,7 +42,7 @@ class CallAutoImportProcessor(private val text: String,
 
   private fun prepareAllContext(token: CodeToken, import: CodeToken) {
     addAction(DeleteRange(import.offset, import.offset + import.length)) //delete token
-    addAction(MoveCaret(import.offset)) //move caret on token
+    addAction(MoveCaret(token.offset)) //move caret on token
   }
 
   private fun preparePreviousContext(token: CodeToken) {
