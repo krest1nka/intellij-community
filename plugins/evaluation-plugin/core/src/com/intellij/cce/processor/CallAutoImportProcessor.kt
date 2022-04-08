@@ -14,10 +14,9 @@ class CallAutoImportProcessor(private val text: String,
     if (strategy.context == CompletionContext.ALL) {
       for (import in code.getChildren()) {
         if (import.properties.tokenType == TypeProperty.IMPORT_STATEMENT) {
-          var expectedQualifiedName: String = import.text.substring(7)
-          System.out.println(expectedQualifiedName)
+          var expectedQualifiedName: String = import.text.substring(7, import.text.length - 1)
           for (token in code.getChildren()) {
-            if (token.properties.additionalProperty("qualified name") == expectedQualifiedName) process(token, import)
+            if (token.properties.additionalProperty("qualified name").equals(expectedQualifiedName)) process(token, import)
           }
         }
       }
@@ -42,7 +41,7 @@ class CallAutoImportProcessor(private val text: String,
 
   private fun prepareAllContext(token: CodeToken, import: CodeToken) {
     addAction(DeleteRange(import.offset, import.offset + import.length)) //delete token
-    addAction(MoveCaret(token.offset)) //move caret on token
+    addAction(MoveCaret(import.offset)) //move caret on token
   }
 
   private fun preparePreviousContext(token: CodeToken) {

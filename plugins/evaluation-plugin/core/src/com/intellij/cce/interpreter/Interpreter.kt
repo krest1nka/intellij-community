@@ -54,7 +54,7 @@ class Interpreter(private val invoker: CompletionInvoker,
           }
         }
         is CallAutoImport -> {
-          TODO()
+          //TODO()
         }
         is FinishSession -> {
           if (shouldCompleteToken) {

@@ -50,7 +50,6 @@ class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursi
 
   override fun visitImportStatement(statement: PsiImportStatement) {
     val token = CodeToken(statement.text, statement.textOffset, statement.textLength, importStatementProperties())
-    System.out.println(statement.text)
     codeFragment?.addChild(token)
   }
 
