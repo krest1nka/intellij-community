@@ -31,7 +31,6 @@ class JavaCompletionEvaluationVisitor : CompletionEvaluationVisitor, JavaRecursi
   }
 
   override fun visitReferenceElement(reference: PsiJavaCodeReferenceElement) {
-    System.out.println(reference.qualifiedName);
     val name = reference.referenceName
     if (name != null) {
       val token = CodeToken(name, reference.textOffset, name.length, createTokenProperties(reference))

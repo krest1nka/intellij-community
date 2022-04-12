@@ -44,7 +44,6 @@ class Interpreter(private val invoker: CompletionInvoker,
           isFinished = false
           if (shouldCompleteToken) {
             val lookup = invoker.callCompletion(action.expectedText, action.prefix)
-            System.out.println(lookup.suggestions)
             if (session == null) {
               val sessionUuid = lookup.features?.common?.context?.get(CCE_SESSION_UID_FEATURE_NAME)
                                 ?: UUID.randomUUID().toString()
@@ -55,17 +54,15 @@ class Interpreter(private val invoker: CompletionInvoker,
           }
         }
         is CallAutoImport -> {
-          val suggestions = mutableListOf<Suggestion>()
-          val elem1 = Suggestion("import java.util.ArrayList;", "import java.util.ArrayList;",
-                                 SuggestionSource.STANDARD, SuggestionKind.ANY)
-          val elem2 = Suggestion("import java.lang.System;", "import java.lang.System;",
-                                 SuggestionSource.STANDARD, SuggestionKind.ANY)
-          suggestions.add(elem1)
-          suggestions.add(elem2)
+          val suggestions = listOf(
+            Suggestion("import java.util.ArrayList;", "import java.util.ArrayList;",
+                       SuggestionSource.STANDARD, SuggestionKind.ANY),
+            Suggestion("import java.lang.System;", "import java.lang.System;",
+                       SuggestionSource.STANDARD, SuggestionKind.ANY)
+          )
           val lookup = Lookup("", suggestions, 0, null, 0, false)
           if (session == null) {
-            val sessionUuid = lookup.features?.common?.context?.get(CCE_SESSION_UID_FEATURE_NAME)
-                              ?: UUID.randomUUID().toString()
+            val sessionUuid = UUID.randomUUID().toString()
             val content = if (saveContent) invoker.getText() else null
             session = Session(position, action.expectedText, content, action.importProperties, sessionUuid)
           }
