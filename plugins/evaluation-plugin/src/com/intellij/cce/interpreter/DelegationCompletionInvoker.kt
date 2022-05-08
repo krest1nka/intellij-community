@@ -46,6 +46,10 @@ class DelegationCompletionInvoker(private val invoker: CompletionInvoker, projec
     }
   }
 
+  override fun callImportCompletion() {
+      invoker.callImportCompletion()
+  }
+
   override fun openFile(file: String): String = readAction {
     invoker.openFile(file)
   }

@@ -1,5 +1,6 @@
 package com.intellij.cce.interpreter
 
+import com.intellij.cce.ImportListProvider
 import com.intellij.cce.actions.CodeGolfEmulation
 import com.intellij.cce.actions.UserEmulator
 import com.intellij.cce.actions.selectedWithoutPrefix
@@ -8,12 +9,14 @@ import com.intellij.cce.evaluation.CodeCompletionHandlerFactory
 import com.intellij.codeInsight.completion.CodeCompletionHandlerBase
 import com.intellij.codeInsight.completion.CompletionProgressIndicator
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.codeInsight.daemon.impl.ShowAutoImportPass
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.codeInsight.lookup.*
 import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.completion.ml.actions.MLCompletionFeaturesUtil
 import com.intellij.completion.ml.util.prefix
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.diagnostic.Logger
@@ -31,6 +34,8 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.testFramework.TestModeFlags
 import java.io.File
 
@@ -53,6 +58,7 @@ class CompletionInvokerImpl(private val project: Project,
     else -> CompletionType.BASIC
   }
   private var editor: Editor? = null
+  private var psiFile: PsiFile? = null
   private var spaceStrippingEnabled: Boolean = true
   private val userEmulator: UserEmulator = UserEmulator.create(userEmulationSettings)
   private val dumbService = DumbService.getInstance(project)
@@ -132,6 +138,7 @@ class CompletionInvokerImpl(private val project: Project,
     val fileEditor = FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
                      ?: throw Exception("Can't open text editor for file: $file")
     editor = fileEditor
+    psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: throw Exception("Can't get PsiFile for file: $file")
     return fileEditor.document.text
   }
 
@@ -208,6 +215,15 @@ class CompletionInvokerImpl(private val project: Project,
       }
     }
     return session
+  }
+
+  override fun callImportCompletion() {
+    runReadAction {
+      val importHints = psiFile?.let { ShowAutoImportPass.getImportHints(it) }
+      var provider = ImportListProvider.EP_NAME.extensions.toList().filter { it.language == language }
+      if (importHints != null) println(provider[0].getListOfImports(importHints))
+      else println("callImportCompletion error")
+    }
   }
 
   private fun positionToString(offset: Int): String {

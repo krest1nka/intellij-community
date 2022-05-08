@@ -36,6 +36,9 @@
     <extensionPoint qualifiedName="com.intellij.cce.setupSdkStep" area="IDEA_PROJECT"
                     interface="com.intellij.cce.evaluation.SetupSdkStep"
                     dynamic="true"/>
+    <extensionPoint qualifiedName="com.intellij.cce.importListProvider"
+                    interface="com.intellij.cce.ImportListProvider"
+                    dynamic="true"/>
   </extensionPoints>
 
   <resource-bundle>messages.EvaluationPluginBundle</resource-bundle>

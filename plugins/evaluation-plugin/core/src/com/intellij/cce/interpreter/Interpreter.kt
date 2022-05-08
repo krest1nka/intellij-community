@@ -67,6 +67,8 @@ class Interpreter(private val invoker: CompletionInvoker,
             session = Session(position, action.expectedText, content, action.importProperties, sessionUuid)
           }
           session.addLookup(lookup)
+
+          invoker.callImportCompletion()
         }
         is FinishSession -> {
           if (shouldCompleteToken) {
