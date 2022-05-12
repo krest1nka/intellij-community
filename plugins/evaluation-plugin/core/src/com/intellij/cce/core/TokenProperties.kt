@@ -56,6 +56,7 @@ class JvmProperties(private val props: TokenProperties) : TokenProperties by pro
     const val STATIC = "isStatic"
     const val PACKAGE = "packageName"
     const val CONTAINING_CLASS = "containingClass"
+    const val QUALIFIED_NAME = "qualified name"
 
     fun create(tokenType: TypeProperty, location: SymbolLocation, init: Builder.() -> Unit): TokenProperties {
       val builder = Builder()
@@ -63,6 +64,7 @@ class JvmProperties(private val props: TokenProperties) : TokenProperties by pro
       return SimpleTokenProperties.create(tokenType, location) {
         builder.isStatic?.let { put(STATIC, it.toString()) }
         builder.packageName?.let { put(PACKAGE, it) }
+        builder.qualifiedName?.let { put(QUALIFIED_NAME, it) }
         builder.declaringClass?.let { put(CONTAINING_CLASS, it) }
 
         put(PropertyAdapters.LANGUAGE_PROPERTY, PropertyAdapters.Jvm.language)
@@ -78,6 +80,7 @@ class JvmProperties(private val props: TokenProperties) : TokenProperties by pro
     var isStatic: Boolean? = null
     var packageName: String? = null
     var declaringClass: String? = null
+    var qualifiedName: String? = null
   }
 }
 
@@ -129,6 +132,7 @@ enum class TypeProperty {
   TYPE_REFERENCE,
   METHOD_CALL,
   FIELD,
+  IMPORT_STATEMENT,
   ARGUMENT_NAME,
   UNKNOWN
 }

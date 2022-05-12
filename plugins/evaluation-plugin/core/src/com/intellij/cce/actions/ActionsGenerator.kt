@@ -1,6 +1,7 @@
 package com.intellij.cce.actions
 
 import com.intellij.cce.core.CodeFragment
+import com.intellij.cce.processor.CallAutoImportProcessor
 import com.intellij.cce.processor.CallCompletionProcessor
 import com.intellij.cce.processor.CodeGolfProcessor
 import com.intellij.cce.processor.DeleteScopesProcessor
@@ -14,7 +15,10 @@ class ActionsGenerator(val strategy: CompletionStrategy) {
 
     val completionVisitor =
       if (strategy.codeGolf) CodeGolfProcessor()
-      else CallCompletionProcessor(code.text, strategy, code.offset)
+      else {
+        //CallCompletionProcessor(code.text, strategy, code.offset)
+        CallAutoImportProcessor(code.text, strategy, code.offset)
+      }
 
     completionVisitor.process(code)
 

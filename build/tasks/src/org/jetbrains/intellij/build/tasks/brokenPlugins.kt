@@ -52,7 +52,7 @@ fun buildBrokenPlugins(targetFile: Path, currentBuildString: String, isInDevelop
 private fun downloadFileFromMarketplace(span: Span): List<MarketplaceBrokenPlugin> {
   val jsonFormat = Json { ignoreUnknownKeys = true }
   val content = download(MARKETPLACE_BROKEN_PLUGINS_URL).toString(Charsets.UTF_8)
-  return jsonFormat.decodeFromString(ListSerializer(MarketplaceBrokenPlugin.serializer()), content)
+  return jsonFormat.decodeFromString(ListSerializer(TODO()), content)
 }
 
 private fun storeBrokenPlugin(brokenPlugin: Map<String, Set<String>>, build: String, targetFile: Path) {

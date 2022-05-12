@@ -1,7 +1,7 @@
 package com.intellij.cce.interpreter
 
 import com.intellij.cce.actions.*
-import com.intellij.cce.core.Session
+import com.intellij.cce.core.*
 import com.intellij.cce.util.FileTextUtil.computeChecksum
 import com.intellij.cce.util.FileTextUtil.getDiff
 import java.nio.file.Paths
@@ -52,6 +52,16 @@ class Interpreter(private val invoker: CompletionInvoker,
             }
             session.addLookup(lookup)
           }
+        }
+        is CallAutoImport -> {
+          val lookup = invoker.callImportCompletion(action.expectedText)
+          if (session == null) {
+            val sessionUuid = UUID.randomUUID().toString()
+            val content = if (saveContent) invoker.getText() else null
+            session = Session(position, action.expectedText, content, action.importProperties, sessionUuid)
+          }
+          session.addLookup(lookup)
+          println(lookup.suggestions)
         }
         is FinishSession -> {
           if (shouldCompleteToken) {
