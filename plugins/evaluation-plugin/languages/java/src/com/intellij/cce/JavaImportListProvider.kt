@@ -2,19 +2,21 @@
 package com.intellij.cce
 
 import com.intellij.cce.core.Language
+import com.intellij.codeInsight.daemon.impl.ShowAutoImportPass
 import com.intellij.codeInsight.daemon.impl.quickfix.ImportClassFix
-import com.intellij.codeInspection.HintAction
+import com.intellij.psi.PsiFile
 
 class JavaImportListProvider() : ImportListProvider {
   override val language: Language = Language.JAVA
 
-  override fun getListOfImports(importHints: List<HintAction>): List<String> {
+  override fun getListOfImports(psiFile: PsiFile): List<String> {
+    val importHints = psiFile.let { ShowAutoImportPass.getImportHints(it) }
     val suggestions = mutableListOf<String>()
     for (import in importHints) {
       for (str in (import as ImportClassFix).classesToImport) {
         if (str.qualifiedName != null) suggestions.add(str.qualifiedName!!)
       }
     }
-    return suggestions
+    return suggestions.distinct()
   }
 }

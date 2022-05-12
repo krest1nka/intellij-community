@@ -2,8 +2,8 @@
 package com.intellij.cce
 
 import com.intellij.cce.core.Language
-import com.intellij.codeInspection.HintAction
 import com.intellij.openapi.extensions.ExtensionPointName
+import com.intellij.psi.PsiFile
 
 interface ImportListProvider {
   companion object {
@@ -12,5 +12,5 @@ interface ImportListProvider {
 
   val language: Language
 
-  fun getListOfImports(importHints: List<HintAction>): List<String> //com.intellij.cce.core.Lookup
+  fun getListOfImports(psiFile: PsiFile): List<String>
 }

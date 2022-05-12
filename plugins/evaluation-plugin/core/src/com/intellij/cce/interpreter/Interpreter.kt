@@ -54,21 +54,14 @@ class Interpreter(private val invoker: CompletionInvoker,
           }
         }
         is CallAutoImport -> {
-          val suggestions = listOf(
-            Suggestion("import java.util.ArrayList;", "import java.util.ArrayList;",
-                       SuggestionSource.STANDARD, SuggestionKind.ANY),
-            Suggestion("import java.lang.System;", "import java.lang.System;",
-                       SuggestionSource.STANDARD, SuggestionKind.ANY)
-          )
-          val lookup = Lookup("", suggestions, 0, null, 0, false)
+          val lookup = invoker.callImportCompletion(action.expectedText)
           if (session == null) {
             val sessionUuid = UUID.randomUUID().toString()
             val content = if (saveContent) invoker.getText() else null
             session = Session(position, action.expectedText, content, action.importProperties, sessionUuid)
           }
           session.addLookup(lookup)
-
-          invoker.callImportCompletion()
+          println(lookup.suggestions)
         }
         is FinishSession -> {
           if (shouldCompleteToken) {

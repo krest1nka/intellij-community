@@ -20,5 +20,5 @@ interface CompletionInvoker {
                          offset: Int): Session
 
   fun emulateCodeGolfSession(expectedLine: String, offset: Int, nodeProperties: TokenProperties): Session
-  fun callImportCompletion()
+  fun callImportCompletion(expectedText: String): com.intellij.cce.core.Lookup
 }

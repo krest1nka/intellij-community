@@ -32,7 +32,7 @@ class CallAutoImportProcessor(private val text: String,
       //CompletionContext.PREVIOUS -> preparePreviousContext(token)
     }
 
-    addAction(CallAutoImport(import.text, import.properties, token.properties))
+    addAction(CallAutoImport(import.text.substring(SKIP_IMPORT_INDEX, import.text.length - 1), import.properties, token.properties))
     addAction(MoveCaret(import.offset))
     addAction(PrintText(import.text, false))
     addAction(FinishSession())

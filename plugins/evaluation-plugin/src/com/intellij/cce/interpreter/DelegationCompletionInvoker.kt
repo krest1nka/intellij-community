@@ -46,12 +46,14 @@ class DelegationCompletionInvoker(private val invoker: CompletionInvoker, projec
     }
   }
 
-  override fun callImportCompletion() {
+  override fun callImportCompletion(expectedText: String): com.intellij.cce.core.Lookup {
+    var result: com.intellij.cce.core.Lookup? = null
     ApplicationManager.getApplication().executeOnPooledThread {
       ApplicationManager.getApplication().runReadAction {
-        invoker.callImportCompletion()
+        result = invoker.callImportCompletion(expectedText)
       }
     }.get()
+    return result as Lookup
   }
 
   override fun openFile(file: String): String = readAction {

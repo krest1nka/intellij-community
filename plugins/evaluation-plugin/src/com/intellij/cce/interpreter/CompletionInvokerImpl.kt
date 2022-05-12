@@ -9,7 +9,6 @@ import com.intellij.cce.evaluation.CodeCompletionHandlerFactory
 import com.intellij.codeInsight.completion.CodeCompletionHandlerBase
 import com.intellij.codeInsight.completion.CompletionProgressIndicator
 import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.codeInsight.daemon.impl.ShowAutoImportPass
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.codeInsight.lookup.*
 import com.intellij.codeInsight.lookup.Lookup
@@ -219,16 +218,20 @@ class CompletionInvokerImpl(private val project: Project,
     return session
   }
 
-  override fun callImportCompletion() {
-      val importHints = psiFile?.let { ShowAutoImportPass.getImportHints(it) }
-      val provider = ImportListProvider.EP_NAME.extensions.toList().filter { it.language == language }
-      if (importHints != null) println(provider[0].getListOfImports(importHints))
-      else println("callImportCompletion error")
+  override fun callImportCompletion(expectedString: String): com.intellij.cce.core.Lookup {
+    val provider = ImportListProvider.EP_NAME.extensions.toList().filter { it.language == language }
+    val start = System.currentTimeMillis()
+    var suggestions = mutableListOf<Suggestion>()
+    val latency = System.currentTimeMillis() - start
+    for (suggestion in provider[0].getListOfImports(psiFile!!)) {
+          suggestions.add(Suggestion(suggestion, suggestion, SuggestionSource.STANDARD, SuggestionKind.ANY))
+    }
+    val features = Features(CommonFeatures(emptyMap(), emptyMap(), emptyMap()), emptyList())
+    return com.intellij.cce.core.Lookup.fromExpectedText(expectedString, "", suggestions, latency, features, true)
   }
 
   private fun commitChanges() {
     val documentManager = PsiDocumentManager.getInstance(project)
-    //documentManager.commitDocument(editor!!.document)
     documentManager.commitDocument(psiFile!!.viewProvider.document)
   }
 
