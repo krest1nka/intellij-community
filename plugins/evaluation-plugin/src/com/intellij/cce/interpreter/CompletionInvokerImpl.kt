@@ -16,7 +16,6 @@ import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.completion.ml.actions.MLCompletionFeaturesUtil
 import com.intellij.completion.ml.util.prefix
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.diagnostic.Logger
@@ -34,6 +33,7 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.TestModeFlags
@@ -117,6 +117,7 @@ class CompletionInvokerImpl(private val project: Project,
         runnable.run()
       }
     }
+    commitChanges()
   }
 
   override fun deleteRange(begin: Int, end: Int) {
@@ -127,6 +128,7 @@ class CompletionInvokerImpl(private val project: Project,
     val runnable = Runnable { document.deleteString(begin, end) }
     WriteCommandAction.runWriteCommandAction(project, runnable)
     if (editor!!.caretModel.offset != begin) editor!!.caretModel.moveToOffset(begin)
+    commitChanges()
   }
 
   override fun openFile(file: String): String {
@@ -218,12 +220,16 @@ class CompletionInvokerImpl(private val project: Project,
   }
 
   override fun callImportCompletion() {
-    runReadAction {
       val importHints = psiFile?.let { ShowAutoImportPass.getImportHints(it) }
-      var provider = ImportListProvider.EP_NAME.extensions.toList().filter { it.language == language }
+      val provider = ImportListProvider.EP_NAME.extensions.toList().filter { it.language == language }
       if (importHints != null) println(provider[0].getListOfImports(importHints))
       else println("callImportCompletion error")
-    }
+  }
+
+  private fun commitChanges() {
+    val documentManager = PsiDocumentManager.getInstance(project)
+    //documentManager.commitDocument(editor!!.document)
+    documentManager.commitDocument(psiFile!!.viewProvider.document)
   }
 
   private fun positionToString(offset: Int): String {

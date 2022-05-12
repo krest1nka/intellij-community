@@ -4,15 +4,17 @@ package com.intellij.cce
 import com.intellij.cce.core.Language
 import com.intellij.codeInsight.daemon.impl.quickfix.ImportClassFix
 import com.intellij.codeInspection.HintAction
-import kotlin.streams.toList
 
 class JavaImportListProvider() : ImportListProvider {
   override val language: Language = Language.JAVA
 
   override fun getListOfImports(importHints: List<HintAction>): List<String> {
-    //return listOf("kek", "lol")
-    var kek = importHints.stream().map{ hint -> hint as ImportClassFix }
-      .flatMap{ hint ->  hint.classesToImport.stream()}.map { toString() }.toList()
-    return kek
+    val suggestions = mutableListOf<String>()
+    for (import in importHints) {
+      for (str in (import as ImportClassFix).classesToImport) {
+        if (str.qualifiedName != null) suggestions.add(str.qualifiedName!!)
+      }
+    }
+    return suggestions
   }
 }
